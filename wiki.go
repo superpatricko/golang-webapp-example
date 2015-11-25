@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -54,8 +53,10 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 
 func saveHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/view/"):]
-	p, _ := loadPage(title)
-	renderTemplate(w, "view", p)
+	body := r.FormValue("body")
+	p := &Page{Title: title, Body: []byte(body)}
+	p.save()
+	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
